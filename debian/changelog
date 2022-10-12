@@ -1,0 +1,292 @@
+libvirt-glib (4.0.0-2) unstable; urgency=medium
+
+  * Upload to unstable (Closes: #993358)
+  * d/gbp.conf: Require upstream signatures
+
+ -- Guido Günther <agx@sigxcpu.org>  Tue, 31 Aug 2021 13:40:39 +0200
+
+libvirt-glib (4.0.0-1) experimental; urgency=medium
+  
+  * Upload to experimental
+  * d/watch: Look for xz tarballs.
+    Upstream switched with 4.0.0
+  * New upstream version 4.0.0
+    (Closes: #985770)
+  * Switch from autotools to meson
+  * d/rules: Drop libdir.
+    Multiarch dirs are used since dh 9.
+  * Bump symbol versions
+  * Bump dh-compat to 13
+  * Disable syntax-checks. The can fail in debian/.
+  * Install l10n files into libvirt-glib-1.0-data
+  * d/control: Bump standards version
+  * d/rules: Enable bindnow hardening
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 07 Apr 2021 11:29:34 +0200
+
+libvirt-glib (3.0.0-1) unstable; urgency=medium
+
+  * New upstream version 3.0.0
+    (Closes: #953975)
+  * Add salsa-ci
+  * Bump symbol versions
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 16 Mar 2020 11:55:19 +0100
+
+libvirt-glib (2.0.0-2) unstable; urgency=medium
+
+  * Upload to unstabe (Closes: #941292)
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 30 Sep 2019 11:52:20 +0200
+
+libvirt-glib (2.0.0-1) experimental; urgency=medium
+
+  * New upstream version 2.0.0
+    (Closes: #921695)
+  * Switch gbp.conf to experimental
+  * Drop Don-t-run-main-loop-twice.patch.
+    Not needed anymore.
+  * d/control: Switch VCS URLs to salsa
+  * d/control: Drop dh-autoreconf build-dep
+  * d/control: Depend on debhelper 10.
+    This is what we're currently using.
+  * d/control: Bump standards version.
+    No changes needed.
+  * d/control: Switch priority to optional.
+  * d/rules: --parallel is default now
+  * Bump symbols
+  * d/watch: Use https URI
+  * d/control: Add provides for typelib files.
+    This helps lintian to figure out that the dev package has the right deps.
+  * Add Build-Depends-Package to symbol file
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 08 Feb 2019 12:09:59 +0100
+
+libvirt-glib (1.0.0-1) unstable; urgency=medium
+
+  * [b4225aa] New upstream version 1.0.0
+  * [a1b9d2a] Bump symbol versions
+  * [2d0ac88] Switch to debian compat level 10
+  * [42f68d8] gbp.conf: switch to upstream/latest
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 09 Dec 2016 13:56:24 +0100
+
+libvirt-glib (0.2.3-2) unstable; urgency=medium
+
+  [ Guido Günther ]
+  * [f2e50c4] Remove useless debian/dirs
+  * [0f9ac6c] Bump standards version
+  * [f431c40] Add missing symbol
+  * [539dcc3] Use dh_autoreconf (Closes: #751921)
+  * [e4f5e69] Drop debug package
+  * [5be5a0d] Drop unused debian/py{compat,versions}
+  * [519db00] Use https git URIs
+  * [f05f74b] Add autopkg test to verify the gir works
+  * [6736b89] Improve descriptions
+
+  [ Matthias Klose ]
+  * [de16694] Multiarchify (Closes: #813061)
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 18 Mar 2016 13:07:28 +0100
+
+libvirt-glib (0.2.3-1) unstable; urgency=medium
+
+  [ Guido Günther ]
+  * [909376d] Verify tarball signature
+  * [d1aa62a] New upstream version 0.2.3 (Closes: #818464)
+
+  [ Andreas Henriksson ]
+  * [0dd8082] Bump build-dependencies according to configure.ac changes.
+     - libvirt-dev (>= 1.1.1)
+     - libglib2.0-dev (>= 2.36.0)
+     - gobject-introspection (>= 1.36.0)
+  * [14a047b] Update debian/libvirt-glib-1.0-0.symbols with added symbols
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 17 Mar 2016 20:38:27 +0100
+
+libvirt-glib (0.2.2-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload with maintainer permission.
+  * [834be8c] Imported Upstream version 0.2.2 (Closes: #793894)
+  * [94ad412] Bump build-dependencies according to configure.ac changes
+              - libglib2.0-dev (>= 2.36)
+  * [db9841d] Update debian/libvirt-glib-1.0-0.symbols with added symbols
+
+ -- Andreas Henriksson <andreas@fatal.se>  Tue, 28 Jul 2015 21:23:55 +0200
+
+libvirt-glib (0.1.9-4) unstable; urgency=medium
+
+  * [7e61158] Fix test by not running main loop twice (Closes: #765566)
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 17 Oct 2014 17:32:20 +0200
+
+libvirt-glib (0.1.9-3) unstable; urgency=medium
+
+  * [e0e94fd] Build-Depend on libtool-bin (Closes: #761771)
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 15 Oct 2014 07:34:40 +0200
+
+libvirt-glib (0.1.9-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 12 Oct 2014 11:23:21 +0200
+
+libvirt-glib (0.1.9-1) experimental; urgency=medium
+
+  * [6e4b1b8] Mention that the API/ABI is not considered stable yet
+  * [0af3efc] New upstream version 0.1.9 (Closes: #761382)
+  * [3e8f002] Bump symbol versions
+  * [936ca30] Bump standards version
+  * [8840ab1] Include dpkg-buildflags to get hardening flags
+  * [d101543] Drop python build-deps. We don't ship the python bindings since
+    ages
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 26 Sep 2014 20:51:46 +0200
+
+libvirt-glib (0.1.7-2) unstable; urgency=medium
+
+  * Upload to unstable (Closes: #726582)
+  * [6e4b1b8] Mention that the API/ABI is not considered stable yet
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 16 Feb 2014 17:53:07 +0100
+
+libvirt-glib (0.1.7-1) experimental; urgency=low
+
+  * Upload to experimental
+  * [04ac4ee] Allow for parallel builds
+  * [778d444] New upstream version (Closes: #726582)
+  * [03ae3ed] Update symbols
+  * [b68d2cb] Build-Dep on intltool
+  * [b2e9891] Don't ship static libs
+  * [4d5162d] Remove gvir_config_domain_source_pty_set_path from exported
+    symbols. The function got accidentally exported under the wrong name
+    upstream.
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 06 Jan 2014 14:50:36 +0100
+
+libvirt-glib (0.1.6-1) unstable; urgency=low
+
+  * Upload to unstable
+  * Acknowledge NMU, thanks Andreas!
+  * [decc6aa] Use vala >= 0.20 (Closes: #709717)
+  * [7f21934] Add gbp.conf
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 30 May 2013 18:14:09 +0200
+
+libvirt-glib (0.1.6-0.1) experimental; urgency=low
+
+  * Non-maintainer upload with maintainer approval.
+  * Imported Upstream version 0.1.6
+  * Add Vcs-* and Homepage fields to debian/control
+  * Bump libvirt-dev build-dependency to (>= 0.10.2)
+  * Update libvirt-glib-1.0-0.symbols
+
+ -- Andreas Henriksson <andreas@fatal.se>  Wed, 27 Mar 2013 13:11:49 +0100
+
+libvirt-glib (0.1.2-1) experimental; urgency=low
+
+  * [d14bf12] New upstream version 0.1.2
+  * [4700825] Ship development documentation
+  * [34fa445] Bump standards version
+  * [8eb4d1c] Update symbols file
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 10 Sep 2012 08:53:32 +0200
+
+libvirt-glib (0.0.8-1) unstable; urgency=low
+
+  * [f9495f9] New upstream version 0.0.8 (Closes: #673018)
+  * [fc3a90f] Bump symbol versions
+
+ -- Guido Günther <agx@sigxcpu.org>  Tue, 15 May 2012 15:32:30 +0200
+
+libvirt-glib (0.0.7-3) unstable; urgency=low
+
+  * Upload to unstable
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 19 Apr 2012 12:29:18 +0200
+
+libvirt-glib (0.0.7-2) experimental; urgency=low
+
+  * [ec963a2] Bump required version in symbols file (Closes: #667683)
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 11 Apr 2012 13:55:51 +0200
+
+libvirt-glib (0.0.7-1) experimental; urgency=low
+
+  * [901d3d1] New upstream version 0.0.7 (Closes: #666690)
+
+ -- Guido Günther <agx@sigxcpu.org>  Tue, 03 Apr 2012 13:27:28 +0200
+
+libvirt-glib (0.0.6-1) experimental; urgency=low
+
+  * New upstream version 0.0.6
+  * [941ceb1] Unconfuse dh.  The GNUMakefile makes it think we're a Make type
+    project otherwise.
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 09 Mar 2012 13:24:02 +0100
+
+libvirt-glib (0.0.5-1) experimental; urgency=low
+
+  * [4882ac8] Change section of introspection data to introspection
+  * [594240d] libvirt-gobject needs libvirt-dev
+  * [0bba521] Require libvirt 0.9.10
+  * [e10b816] watch: use http for download
+  * [34e2822] New upstream version 0.0.5
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 05 Mar 2012 08:55:32 +0100
+
+libvirt-glib (0.0.4-1) experimental; urgency=low
+
+  * [de2b022] New upstream version 0.0.4
+  * [b148481] Update symbols file
+
+ -- Guido Günther <agx@sigxcpu.org>  Sat, 14 Jan 2012 22:01:22 +0100
+
+libvirt-glib (0.0.2-1) experimental; urgency=low
+
+  * [71266c3] New upstream version 0.0.2
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 23 Nov 2011 22:17:32 +0100
+
+libvirt-glib (0.0.1-1) experimental; urgency=low
+
+  * [555e057] New upstream version 0.0.1
+  * [cccbecc] Add watch file
+  * [ce1afbf] Enable vala bindings
+  * [2145772] Drop
+    0001-Explicitly-link-conn-test-example-against-libgobject.patch applied
+    upstream.
+  * [f26c096] Only invoke autogen.sh if configure isn't available so we can
+    build both git snapshots and release tarballs.
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 17 Nov 2011 08:40:39 +0100
+
+libvirt-glib (0.0.1~1.git55696-1) experimental; urgency=low
+
+  * [1b2450a] New upstream version 0.0.1~1.git55696
+  * [da6f297] Invoke autogen.sh since we're building a git snapshot
+  * [44b82be] Drop patches. All applied upstream
+  * [66b57a9] Switch to source format 3 (quilt)
+  * [e904b24] Add new build-deps (libxml2-dev)
+  * [304d605] Switch from cdbs to dh. Drop python package since we ship a gir
+    package now.
+  * [56d5023] New patch
+    0001-Explicitly-link-conn-test-example-against-libgobject.patch.
+    to fix the example build.
+  * [541d961] Add symbols file
+  * [48c0ec2] Bump standards version
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 03 Oct 2011 18:45:59 +0200
+
+libvirt-glib (0~0.git22fac-2) experimental; urgency=low
+
+  * [3fa3427] Add pyversions file (Closes: #588596)
+
+ -- Guido Günther <agx@sigxcpu.org>  Sat, 10 Jul 2010 13:55:21 +0200
+
+libvirt-glib (0~0.git22fac-1) experimental; urgency=low
+
+  * Initial release (Closes: #535825)
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 19 Jul 2009 17:24:28 +0200

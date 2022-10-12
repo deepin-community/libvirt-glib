@@ -1,0 +1,119 @@
+# Libvirt package strings.
+# Copyright (C) 2020 The Libvirt authors
+# This file is distributed under the same license as the libvirt-glib package.
+# Andika Triwidada <andika@gmail.com>, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt-glib 3.0.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2020-07-06 16:42+0100\n"
+"PO-Revision-Date: 2020-09-08 00:29+0000\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: Indonesian <https://translate.fedoraproject.org/projects/"
+"libvirt/libvirt-glib/id/>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.2.2\n"
+
+#, c-format
+msgid "Connection %s is already open"
+msgstr "Koneksi %s sudah terbuka"
+
+msgid "Connection is not open"
+msgstr "Koneksi tidak terbuka"
+
+msgid "Connection is not opened"
+msgstr "Koneksi tidak dibuka"
+
+msgid "Failed to create domain"
+msgstr "Gagal membuat domain"
+
+msgid "Failed to create storage pool"
+msgstr "Gagal membuat pool penyimpanan"
+
+msgid "Failed to fetch list of domains"
+msgstr "Gagal mengambil daftar domain"
+
+msgid "Failed to fetch list of interfaces"
+msgstr "Gagal mengambil daftar antar muka"
+
+msgid "Failed to fetch list of networks"
+msgstr "Gagal mengambil daftar jaringan"
+
+msgid "Failed to fetch list of pools"
+msgstr "Gagal mengambil daftar pool"
+
+#, c-format
+msgid "Got virStreamRecv error in %s"
+msgstr "Mendapat galat virStreamRecv dalam %s"
+
+msgid "No XML document associated with this config object"
+msgstr "Tidak ada dokumen XML yang terkait dengan objek konfig ini"
+
+msgid "No XML document to parse"
+msgstr "Tidak ada dokumen XML untuk diurai"
+
+msgid "No XML schema associated with this config object"
+msgstr "Tidak ada skema XML yang terakit dengan objek konfig ini"
+
+#, c-format
+msgid "Unable to create RNG parser for %s"
+msgstr "Tidak bisa membuat pengurai RNG bagi %s"
+
+#, c-format
+msgid "Unable to create RNG validation context %s"
+msgstr "Tidak bisa membuat konteks validasi RNG %s"
+
+msgid "Unable to get capabilities"
+msgstr "Tidak bisa memperoleh kapabilitas"
+
+msgid "Unable to get connection URI"
+msgstr "Tidak bisa mendapat URI koneksi"
+
+msgid "Unable to get domain capabilities"
+msgstr "Tidak bisa mendapat kapabilitas domain"
+
+msgid "Unable to get hypervisor name"
+msgstr "Tidak bisa mendapat nama hypervisor"
+
+msgid "Unable to get hypervisor version"
+msgstr "Tidak bisa mendapat versi hypervisor"
+
+msgid "Unable to get node info"
+msgstr "Tidak bisa mendapat info node"
+
+#, c-format
+msgid "Unable to open %s"
+msgstr "Tidak bisa membuka %s"
+
+#, c-format
+msgid "Unable to parse RNG %s"
+msgstr "Tidak bisa mengurai RNG %s"
+
+msgid "Unable to parse configuration"
+msgstr "Tidak bisa mengurai konfigurasi"
+
+msgid "Unable to perform RecvAll"
+msgstr "Tidak bisa melaksanakan RecvAll"
+
+msgid "Unable to perform SendAll"
+msgstr "Tidak bisa melaksanakan SendAll"
+
+msgid "Unable to restore domain"
+msgstr "Tidak bisa memulihkan domain"
+
+msgid "Unable to validate doc"
+msgstr "Tidak bisa memvalidasi dok"
+
+#, c-format
+msgid "XML data has no '%s' node"
+msgstr "Data XML tidak punya node '%s'"
+
+msgid "virStreamRecv call would block"
+msgstr "Pemanggilan virStreamRecv akan memblokir"
+
+msgid "virStreamSend call would block"
+msgstr "Pemanggilan virStreamSend akan memblokir"

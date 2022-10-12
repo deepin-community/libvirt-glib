@@ -1,0 +1,119 @@
+# Libvirt package strings.
+# Copyright (C) 2020 The Libvirt authors
+# This file is distributed under the same license as the libvirt-glib package.
+# Milo Casagrande <milo@milo.name>, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt-glib 3.0.0\n"
+"Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
+"POT-Creation-Date: 2020-07-06 16:42+0100\n"
+"PO-Revision-Date: 2020-09-11 14:29+0000\n"
+"Last-Translator: Milo Casagrande <milo@milo.name>\n"
+"Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt-glib/it/>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.2\n"
+
+#, c-format
+msgid "Connection %s is already open"
+msgstr "La connessione %s è già aperta"
+
+msgid "Connection is not open"
+msgstr "La connessione non è aperta"
+
+msgid "Connection is not opened"
+msgstr "La connessione non è stata aperta"
+
+msgid "Failed to create domain"
+msgstr "Creazione del dominio non riuscita"
+
+msgid "Failed to create storage pool"
+msgstr "Creazione pool di archiviazione non riuscita"
+
+msgid "Failed to fetch list of domains"
+msgstr "Recupero elenco dei domini non riuscito"
+
+msgid "Failed to fetch list of interfaces"
+msgstr "Recupero elenco delle interfacce non riuscito"
+
+msgid "Failed to fetch list of networks"
+msgstr "Recupero elenco delle reti non riuscito"
+
+msgid "Failed to fetch list of pools"
+msgstr "Recupero elenco dei pool non riuscito"
+
+#, c-format
+msgid "Got virStreamRecv error in %s"
+msgstr "Ottenuto errore virStreamRecv in %s"
+
+msgid "No XML document associated with this config object"
+msgstr "Nessun documento XML associato con questo oggetto di configurazione"
+
+msgid "No XML document to parse"
+msgstr "Nessun documento XML da leggere"
+
+msgid "No XML schema associated with this config object"
+msgstr "Nessuno schema XML associato con questo oggetto di configurazione"
+
+#, c-format
+msgid "Unable to create RNG parser for %s"
+msgstr "Impossibile creare un analizzatore RNG per %s"
+
+#, c-format
+msgid "Unable to create RNG validation context %s"
+msgstr "Impossibile creare il contesto di validazione RNG %s"
+
+msgid "Unable to get capabilities"
+msgstr "Impossibile ottenere le funzionalità"
+
+msgid "Unable to get connection URI"
+msgstr "Impossibile ottenere l'URI di connessione"
+
+msgid "Unable to get domain capabilities"
+msgstr "Impossibile ottenere le funzionalità del dominio"
+
+msgid "Unable to get hypervisor name"
+msgstr "Impossibile ottenere il nome dell'hypervisor"
+
+msgid "Unable to get hypervisor version"
+msgstr "Impossibile ottenere la versione dell'hypervisor"
+
+msgid "Unable to get node info"
+msgstr "Impossibile ottenere informazioni sul nodo"
+
+#, c-format
+msgid "Unable to open %s"
+msgstr "Impossibile aprire %s"
+
+#, c-format
+msgid "Unable to parse RNG %s"
+msgstr "Impossibile leggere RNG %s"
+
+msgid "Unable to parse configuration"
+msgstr "Impossibile leggere la configurazione"
+
+msgid "Unable to perform RecvAll"
+msgstr "Impossibile eseguire RecvAll"
+
+msgid "Unable to perform SendAll"
+msgstr "Impossibile eseguire SendAll"
+
+msgid "Unable to restore domain"
+msgstr "Impossibile ripristinare il dominio"
+
+msgid "Unable to validate doc"
+msgstr "Impossibile validare il documento"
+
+#, c-format
+msgid "XML data has no '%s' node"
+msgstr "I dati XML non hanno un nodo «%s»"
+
+msgid "virStreamRecv call would block"
+msgstr "La chiamata virStreamRecv è bloccante"
+
+msgid "virStreamSend call would block"
+msgstr "La chiamata virStreamSend è bloccante"
