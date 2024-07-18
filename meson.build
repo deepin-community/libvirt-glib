@@ -1,11 +1,12 @@
 project(
   'libvirt-glib', 'c',
-  version: '4.0.0',
+  version: '5.0.0',
   license: 'LGPLv2+',
-  meson_version: '>= 0.50.0',
+  meson_version: '>= 0.56.0',
   default_options: [
     'buildtype=debugoptimized',
     'c_std=gnu99',
+    'warning_level=2',
   ],
 )
 
@@ -15,7 +16,7 @@ python3 = find_program('python3', required: true)
 runutf8 = [ 'LC_ALL=', 'LANG=C', 'LC_CTYPE=en_US.UTF-8' ]
 
 cc = meson.get_compiler('c')
-git = run_command('test', '-d', '.git').returncode() == 0
+git = run_command('test', '-d', '.git', check: false).returncode() == 0
 
 version_info = meson.project_version().split('.')
 version_major = version_info[0].to_int()
@@ -44,14 +45,11 @@ glib_dep = dependency('glib-2.0', version: '>=' + glib_version)
 gobject_dep = dependency('gobject-2.0', version: '>=' + glib_version)
 gio_dep = dependency('gio-2.0', version: '>=' + glib_version)
 
-libvirt_version = '1.2.8'
+libvirt_version = '2.3.0'
 libvirt_dep = dependency('libvirt', version: '>=' + libvirt_version)
 
 libxml_min_version='>=2.9.1'
 libxml_dep = dependency('libxml-2.0', version: libxml_min_version)
-
-add_global_arguments('-DGLIB_VERSION_MIN_REQUIRED=@0@'.format(glib_min_version_symbol), language: 'c')
-add_global_arguments('-DGLIB_VERSION_MAX_ALLOWED=@0@'.format(glib_min_version_symbol), language: 'c')
 
 prefix = get_option('prefix')
 localedir = join_paths(prefix, get_option('localedir'))
@@ -59,13 +57,15 @@ datadir = join_paths(prefix, get_option('datadir'))
 libdir = join_paths(prefix, get_option('libdir'))
 includedir = join_paths(prefix, get_option('includedir'))
 
+subdir('build-aux')
+
 # gobject introspection
 gir = find_program('g-ir-scanner', required: get_option('introspection'))
 enable_introspection = gir.found() and not meson.is_cross_build()
 
 # vala
 vapi_opt = get_option('vapi')
-enable_vapi = add_languages('vala', required: vapi_opt)
+enable_vapi = add_languages('vala', native: false, required: vapi_opt)
 if enable_vapi and not enable_introspection
     enable_vapi = false
     if vapi_opt.enabled()
@@ -121,12 +121,6 @@ if git
     output: 'libvirt-glib.spec',
     configuration: conf_data
   )
-
-  configure_file(
-    input: 'mingw-libvirt-glib.spec.in',
-    output: 'mingw-libvirt-glib.spec',
-    configuration: conf_data
-  )
 endif
 
 configure_file(
@@ -160,14 +154,31 @@ if git_werror.enabled() or git_werror.auto() and git
   cc_flags += [ '-Werror' ]
 endif
 
+# gcc --help=warnings outputs
+ptrdiff_max = cc.sizeof('ptrdiff_t', prefix: '#include <stddef.h>')
+size_max = cc.sizeof('size_t', prefix: '#include <stdint.h>')
+# Compute max safe object size by checking ptrdiff_t and size_t sizes.
+# Ideally we would get PTRDIFF_MAX and SIZE_MAX values but it would
+# give us (2147483647L) and we would have to remove the () and the suffix
+# in order to convert it to numbers to be able to pick the smaller one.
+alloc_max = run_command(
+  python3.full_path(), '-c',
+  'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
+  check: true,
+)
+
 cc_flags += [
+  '-fasynchronous-unwind-tables',
+  '-fexceptions',
+  '-fipa-pure-const',
   '-fno-common',
-  '-W',
   '-Wabsolute-value',
   '-Waddress',
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
-  '-Wall',
+  '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
+  '-Warray-bounds=2',
+  '-Wattribute-alias=2',
   '-Wattribute-warning',
   '-Wattributes',
   '-Wbool-compare',
@@ -175,9 +186,8 @@ cc_flags += [
   '-Wbuiltin-declaration-mismatch',
   '-Wbuiltin-macro-redefined',
   '-Wcannot-profile',
-  '-Wcast-align',
-  '-Wcast-align=strict',
-  '-Wcast-function-type',
+  # We do "bad" function casts all the time for event callbacks
+  '-Wno-cast-function-type',
   '-Wchar-subscripts',
   '-Wclobbered',
   '-Wcomment',
@@ -196,20 +206,25 @@ cc_flags += [
   '-Wempty-body',
   '-Wendif-labels',
   '-Wexpansion-to-defined',
-  '-Wextra',
   '-Wformat-contains-nul',
   '-Wformat-extra-args',
-  '-Wformat-nonliteral',
+  '-Wno-format-nonliteral',
+  '-Wformat-overflow=2',
   '-Wformat-security',
+  # -Wformat enables this by default, and we should keep it,
+  # but need to rewrite various areas of code first
+  '-Wno-format-truncation',
   '-Wformat-y2k',
   '-Wformat-zero-length',
   '-Wframe-address',
+  '-Wframe-larger-than=256',
   '-Wfree-nonheap-object',
   '-Whsa',
   '-Wif-not-aligned',
   '-Wignored-attributes',
   '-Wignored-qualifiers',
   '-Wimplicit',
+  '-Wimplicit-fallthrough=5',
   '-Wimplicit-function-declaration',
   '-Wimplicit-int',
   '-Wincompatible-pointer-types',
@@ -220,6 +235,7 @@ cc_flags += [
   '-Wint-to-pointer-cast',
   '-Winvalid-memory-model',
   '-Winvalid-pch',
+  '-Wjump-misses-init',
   '-Wlogical-not-parentheses',
   '-Wlogical-op',
   '-Wmain',
@@ -241,6 +257,7 @@ cc_flags += [
   '-Wnested-externs',
   '-Wnonnull',
   '-Wnonnull-compare',
+  '-Wnormalized=nfc',
   '-Wnull-dereference',
   '-Wodr',
   '-Wold-style-declaration',
@@ -266,32 +283,41 @@ cc_flags += [
   '-Wshift-count-negative',
   '-Wshift-count-overflow',
   '-Wshift-negative-value',
+  '-Wshift-overflow=2',
+  # So we have -W enabled, and then have to explicitly turn off...
+  '-Wno-sign-compare',
   '-Wsizeof-array-argument',
   '-Wsizeof-pointer-div',
   '-Wsizeof-pointer-memaccess',
   '-Wstrict-aliasing',
   '-Wstrict-prototypes',
+  '-Wstringop-overflow=2',
   '-Wstringop-truncation',
   '-Wsuggest-attribute=cold',
-  '-Wsuggest-attribute=const',
+  '-Wno-suggest-attribute=const',
   '-Wsuggest-attribute=format',
   '-Wsuggest-attribute=noreturn',
-  '-Wsuggest-attribute=pure',
+  '-Wno-suggest-attribute=pure',
   '-Wsuggest-final-methods',
   '-Wsuggest-final-types',
   '-Wswitch',
   '-Wswitch-bool',
+  '-Wswitch-enum',
   '-Wswitch-unreachable',
   '-Wsync-nand',
   '-Wtautological-compare',
   '-Wtrampolines',
   '-Wtrigraphs',
   '-Wtype-limits',
+  # Clang incorrectly complains about dup typedefs win gnu99 mode
+  # so use this Clang-specific arg to keep it quiet
+  '-Wno-typedef-redefinition',
   '-Wuninitialized',
   '-Wunknown-pragmas',
   '-Wunused',
   '-Wunused-but-set-parameter',
   '-Wunused-but-set-variable',
+  '-Wunused-const-variable=2',
   '-Wunused-function',
   '-Wunused-label',
   '-Wunused-local-typedefs',
@@ -306,198 +332,59 @@ cc_flags += [
   '-Wwrite-strings',
 ]
 
-# gcc --help=warnings outputs
-ptrdiff_max = cc.sizeof('ptrdiff_t', prefix: '#include <stddef.h>')
-size_max = cc.sizeof('size_t', prefix: '#include <stdint.h>')
-# Compute max safe object size by checking ptrdiff_t and size_t sizes.
-# Ideally we would get PTRDIFF_MAX and SIZE_MAX values but it would
-# give us (2147483647L) and we would have to remove the () and the suffix
-# in order to convert it to numbers to be able to pick the smaller one.
-alloc_max = run_command(
-  python3.path(), '-c',
-  'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
-)
-cc_flags += [
-  '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
-  '-Warray-bounds=2',
-  '-Wattribute-alias=2',
-  '-Wformat-overflow=2',
-  '-Wformat-truncation=2',
-  '-Wimplicit-fallthrough=5',
-  '-Wnormalized=nfc',
-  '-Wshift-overflow=2',
-  '-Wstringop-overflow=2',
-  '-Wunused-const-variable=2',
-  '-Wvla-larger-then=4031',
-]
 
-cc_flags += [
-  # So we have -W enabled, and then have to explicitly turn off...
-  '-Wno-sign-compare',
+if get_option('warning_level') == '2'
+  # on aarch64 error: -fstack-protector not supported for this target
+  if host_machine.cpu_family() != 'aarch64'
+    if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
+      # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
+      fstack_cflags = cc.first_supported_argument([
+        '-fstack-protector-strong',
+        '-fstack-protector-all',
+      ])
+      cc_flags += fstack_cflags
 
-  # We do "bad" function casts all the time for event callbacks
-  '-Wno-cast-function-type',
-
-  # Clang incorrectly complains about dup typedefs win gnu99 mode
-  # so use this Clang-specific arg to keep it quiet
-  '-Wno-typedef-redefinition',
-
-  # We don't use -Wc++-compat so we have to enable it explicitly
-  '-Wjump-misses-init',
-
-  # -Wswitch is enabled but that doesn't report missing enums if a default:
-  # is present
-  '-Wswitch-enum',
-
-  # -Wformat=2 implies -Wformat-nonliteral so we need to manually exclude it
-  '-Wno-format-nonliteral',
-
-  # -Wformat enables this by default, and we should keep it,
-  # but need to rewrite various areas of code first
-  '-Wno-format-truncation',
-
-  # This should be < 256 really. Currently we're down to 4096,
-  # but using 1024 bytes sized buffers (mostly for virStrerror)
-  # stops us from going down further
-  '-Wframe-larger-than=4096',
-
-  # extra special flags
-  '-fexceptions',
-  '-fasynchronous-unwind-tables',
-
-  # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
-  # fire even without -O.
-  '-fipa-pure-const',
-
-  # We should eventually enable this, but right now there are at
-  # least 75 functions triggering warnings.
-  '-Wno-suggest-attribute=pure',
-  '-Wno-suggest-attribute=const',
-
-  # gtk-doc-scangobj causes failures. We should do a
-  # more targetted workaround for this really.
-  '-Wno-unused-parameter',
-]
-
-# on aarch64 error: -fstack-protector not supported for this target
-if host_machine.cpu_family() != 'aarch64'
-  if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
-    # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
-    fstack_cflags = cc.first_supported_argument([
-      '-fstack-protector-strong',
-      '-fstack-protector-all',
-    ])
-    cc_flags += fstack_cflags
-
-    # When building with mingw using -fstack-protector requires libssp library
-    # which is included by using -fstack-protector with linker.
-    if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
-      add_project_link_arguments(fstack_cflags, language: 'c')
+      # When building with mingw using -fstack-protector requires libssp library
+      # which is included by using -fstack-protector with linker.
+      if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
+        add_project_link_arguments(fstack_cflags, language: 'c')
+      endif
     endif
   endif
-endif
 
-# Clang complains about unused static inline functions which are common
-# with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
-w_unused_function_args = ['-Wunused-function', '-Werror']
-w_unused_function_code = '''
-  static inline void foo(void) {}
+  # Clang complains about unused static inline functions which are common
+  # with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
+  w_unused_function_args = ['-Wunused-function', '-Werror']
+  w_unused_function_code = '''
+    static inline void foo(void) {}
 
-  int main(void) { return 0; }
-'''
-# -Wunused-function is implied by -Wall, we must turn it off explicitly.
-if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
-  cc_flags += ['-Wno-unused-function']
-endif
-
-cc_flags_disabled = [
-  # In meson this is specified using 'c_std=gnu99' in project() function.
-  '-std=gnu99',
-
-  # don't care about C++ compiler compat
-  '-Wc++-compat',
-  '-Wabi',
-  '-Wdeprecated',
-
-  # Don't care about ancient C standard compat
-  '-Wtraditional',
-  '-Wtraditional-conversion',
-
-  # Ignore warnings in /usr/include
-  '-Wsystem-headers',
-
-  # Happy for compiler to add struct padding
-  '-Wpadded',
-
-  # GCC very confused with -O2
-  '-Wunreachable-code',
-
-  # Too many to deal with
-  '-Wconversion',
-  '-Wsign-conversion',
-
-  # Need to allow bad cast for execve()
-  '-Wcast-qual',
-
-  # We need to use long long in many places
-  '-Wlong-long',
-
-  # We allow manual list of all enum cases without default
-  '-Wswitch-default',
-
-  # Not a problem since we don't use -fstrict-overflow
-  '-Wstrict-overflow',
-
-  # Not a problem since we don't use -funsafe-loop-optimizations
-  '-Wunsafe-loop-optimizations',
-
-  # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
-  '-Wenum-compare',
-
-  # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
-  '-Wformat-signedness',
-
-  # Several conditionals expand the same on both branches depending on the
-  # particular platform/architecture
-  '-Wduplicated-branches',
-
-  # > This warning does not generally indicate that there is anything wrong
-  # > with your code; it merely indicates that GCC's optimizers are unable
-  # > to handle the code effectively.
-  # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-  '-Wdisabled-optimization',
-
-  # Various valid glib APIs/macros trigger this warning
-  '-Wbad-function-cast',
-
-  # We might fundamentally need some of these disabled forever, but
-  # ideally we'd turn many of them on
-  '-Wfloat-equal',
-  '-Wpacked',
-  '-Wunused-macros',
-  '-Woverlength-strings',
-  '-Wstack-protector',
-  '-Wsuggest-attribute=malloc',
-
-  # g_return_val_if_fail usage violates this often
-  '-Wdeclaration-after-statement',
-
-  # older gtk-doc fails - re-enable this in future
-  '-Wdouble-promotion',
-]
-
-foreach flag : cc_flags_disabled
-  if cc_flags.contains(flag)
-    error('@0@ is disabled but listed in cc_flags'.format(flag))
+    int main(void) { return 0; }
+  '''
+  # -Wunused-function is implied by -Wall, we must turn it off explicitly.
+  if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
+    cc_flags += ['-Wno-unused-function']
   endif
-endforeach
 
-supported_cc_flags = cc.get_supported_arguments(cc_flags)
-add_project_arguments(supported_cc_flags, language: 'c')
+  warning_cflags = cc.get_supported_arguments(cc_flags)
+else
+  warning_cflags = []
+endif
+
+if host_machine.system() == 'windows'
+  # no machinery for generating .def files for now
+  version_script_flags = ''
+elif host_machine.system() == 'darwin'
+  # macOS libraries don't support symbol versioning
+  version_script_flags = ''
+else
+  version_script_flags = '-Wl,--version-script='
+endif
+
+
 
 if git
-  authors_helper = join_paths(meson.source_root(), 'build-aux', 'gen-authors.py')
-  authors = run_command(python3.path(), authors_helper, env: runutf8)
+  authors = run_command(python3.full_path(), gen_authors_prog.full_path(),
+                        env: runutf8, check: true)
   authors_file = 'AUTHORS.in'
 
   authors_conf = configuration_data()
@@ -509,25 +396,24 @@ if git
     configuration: authors_conf,
   )
 
-  dist_helper = join_paths(meson.source_root(), 'build-aux', 'dist.py')
-  meson.add_dist_script(python3.path(), dist_helper, meson.build_root(), 'AUTHORS')
-  meson.add_dist_script(python3.path(), dist_helper, meson.build_root(), 'libvirt-glib.spec')
+  meson.add_dist_script(python3.full_path(), dist_prog.full_path(),
+                        meson.project_build_root(), 'AUTHORS')
+  meson.add_dist_script(python3.full_path(), dist_prog.full_path(),
+                        meson.project_build_root(), 'libvirt-glib.spec')
 endif
 
 common_cflags = [
   '-DLOCALEDIR="@0@"'.format(localedir),
   '-DDATADIR="@0@"'.format(datadir),
   '-DLIBVIRT_GLIB_BUILD',
+  '-DGLIB_VERSION_MIN_REQUIRED=@0@'.format(glib_min_version_symbol),
+  '-DGLIB_VERSION_MAX_ALLOWED=@0@'.format(glib_min_version_symbol),
 ]
 
 gnome = import('gnome')
 i18n = import('i18n')
 
 top_include_dir = [include_directories('.')]
-
-check_symfile = join_paths(meson.source_root(), 'build-aux', 'check-symfile.py')
-check_symsorting = join_paths(meson.source_root(), 'build-aux', 'check-symsorting.py')
-
 
 subdir('libvirt-glib')
 subdir('libvirt-gconfig')
@@ -538,4 +424,3 @@ subdir('docs')
 if build_tests
   subdir('tests')
 endif
-subdir('build-aux')

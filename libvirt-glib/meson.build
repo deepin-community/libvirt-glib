@@ -15,23 +15,25 @@ libvirt_glib_deps = [
   libvirt_dep, glib_dep,
 ]
 
+libvirt_glib_sym_file = meson.current_source_dir() / 'libvirt-glib.sym'
 libvirt_glib_link_args = common_link_args
-if host_machine.system() == 'linux'
-  libvirt_glib_link_args += [
-    '-Wl,--version-script,@0@/@1@'.format(
-      meson.current_source_dir(),
-      'libvirt-glib.sym'
-    )
-  ]
+libvirt_glib_link_depends = []
+if version_script_flags != ''
+  libvirt_glib_link_args += '@0@@1@'.format(
+    version_script_flags,
+    libvirt_glib_sym_file,
+  )
+  libvirt_glib_link_depends += libvirt_glib_sym_file
 endif
 
 libvirt_glib = shared_library(
   'virt-glib-1.0',
   sources: libvirt_glib_sources,
-  c_args: common_cflags,
+  c_args: common_cflags + warning_cflags,
   dependencies: libvirt_glib_deps,
   include_directories: top_include_dir,
   link_args: libvirt_glib_link_args,
+  link_depends: libvirt_glib_link_depends,
   version: libvirt_glib_version,
   darwin_versions: libvirt_glib_darwin_versions,
   soversion: libvirt_glib_soversion,
@@ -89,13 +91,15 @@ if enable_introspection
   endif
 endif
 
-test('check-glib-symfile',
-     python3,
-     args: [check_symfile,
-            join_paths(meson.current_source_dir(), 'libvirt-glib.sym'),
-            join_paths(meson.current_build_dir(), 'libvirt-glib-1.0.so')])
+if host_machine.system() != 'windows' and host_machine.system() != 'darwin'
+  test('check-glib-symfile',
+    python3,
+    args: [check_symfile_prog.full_path(),
+      libvirt_glib_sym_file,
+      join_paths(meson.current_build_dir(), 'libvirt-glib-1.0.so')])
+endif
 
 test('check-glib-symsorting',
      python3,
-     args: [check_symsorting,
-            join_paths(meson.current_source_dir(), 'libvirt-glib.sym')])
+     args: [check_symsorting_prog.full_path(),
+            libvirt_glib_sym_file])

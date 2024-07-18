@@ -20,7 +20,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __LIBVIRT_GCONFIG_H__
+#pragma once
+
 #define __LIBVIRT_GCONFIG_H__
 
 #include <glib-object.h>
@@ -43,6 +44,7 @@
 #include <libvirt-gconfig/libvirt-gconfig-domain-address.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-address-pci.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-address-usb.h>
+#include <libvirt-gconfig/libvirt-gconfig-domain-audio.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-capabilities.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-capabilities-os.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-chardev.h>
@@ -69,6 +71,7 @@
 #include <libvirt-gconfig/libvirt-gconfig-domain-graphics-sdl.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-graphics-spice.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-graphics-vnc.h>
+#include <libvirt-gconfig/libvirt-gconfig-domain-graphics-dbus.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-hostdev.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-hostdev-pci.h>
 #include <libvirt-gconfig/libvirt-gconfig-domain-input.h>
@@ -111,5 +114,3 @@
 #include <libvirt-gconfig/libvirt-gconfig-storage-vol.h>
 #include <libvirt-gconfig/libvirt-gconfig-storage-vol-backing-store.h>
 #include <libvirt-gconfig/libvirt-gconfig-storage-vol-target.h>
-
-#endif /* __LIBVIRT_GCONFIG_H__ */

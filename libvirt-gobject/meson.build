@@ -63,6 +63,10 @@ libvirt_gobject_enum_sources = gnome.mkenums(
   c_template: 'libvirt-gobject-enums.c.template',
   symbol_prefix: 'gvir',
   identifier_prefix: 'GVir',
+  # workaround for https://github.com/mesonbuild/meson/issues/9472
+  install_header: false,
+  install_dir: libvirt_gobject_includedir,
+  # end workaround
 )
 
 libvirt_gobject_sources += [libvirt_gobject_enum_sources, libvirt_gobject_enum_headers]
@@ -71,24 +75,26 @@ libvirt_gobject_deps = [
   libvirt_dep, gio_dep, libvirt_glib_dep, libvirt_gconfig_dep,
 ]
 
+libvirt_gobject_sym_file = meson.current_source_dir() / 'libvirt-gobject.sym'
 libvirt_gobject_link_args = common_link_args
-if host_machine.system() == 'linux'
-  libvirt_gobject_link_args += [
-    '-Wl,--version-script,@0@/@1@'.format(
-      meson.current_source_dir(),
-      'libvirt-gobject.sym'
-    )
-  ]
+libvirt_gobject_link_depends = []
+if version_script_flags != ''
+  libvirt_gobject_link_args += '@0@@1@'.format(
+    version_script_flags,
+    libvirt_gobject_sym_file,
+  )
+  libvirt_gobject_link_depends += libvirt_gobject_sym_file
 endif
 
 libvirt_gobject = shared_library(
   'virt-gobject-1.0',
   sources: libvirt_gobject_sources,
-  c_args: common_cflags,
+  c_args: common_cflags + warning_cflags,
   dependencies: libvirt_gobject_deps,
   include_directories: top_include_dir,
   link_with: [libvirt_glib, libvirt_gconfig],
   link_args: libvirt_gobject_link_args,
+  link_depends: libvirt_gobject_link_depends,
   version: libvirt_glib_version,
   darwin_versions: libvirt_glib_darwin_versions,
   soversion: libvirt_glib_soversion,
@@ -157,13 +163,15 @@ if enable_introspection
   endif
 endif
 
-test('check-gobject-symfile',
-     python3,
-     args: [check_symfile,
-            join_paths(meson.current_source_dir(), 'libvirt-gobject.sym'),
-            join_paths(meson.current_build_dir(), 'libvirt-gobject-1.0.so')])
+if host_machine.system() != 'windows' and host_machine.system() != 'darwin'
+  test('check-gobject-symfile',
+    python3,
+    args: [check_symfile_prog.full_path(),
+      libvirt_gobject_sym_file,
+      join_paths(meson.current_build_dir(), 'libvirt-gobject-1.0.so')])
+endif
 
 test('check-gobject-symsorting',
      python3,
-     args: [check_symsorting,
-            join_paths(meson.current_source_dir(), 'libvirt-gobject.sym')])
+     args: [check_symsorting_prog.full_path(),
+            libvirt_gobject_sym_file])

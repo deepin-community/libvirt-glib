@@ -1,20 +1,22 @@
 Source: libvirt-glib
 Section: libs
 Priority: optional
-Maintainer: Guido Günther <agx@sigxcpu.org>
-Build-Depends: debhelper-compat (=13),
+Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
+Uploaders: Guido Günther <agx@sigxcpu.org>,
+Build-Depends: debhelper-compat (= 13),
+ dh-sequence-gir,
  gtk-doc-tools,
- intltool,
  pkg-config,
- libvirt-dev (>= 1.1.1), libglib2.0-dev (>= 2.36.0),
- libxml2-dev, libgirepository1.0-dev, gobject-introspection (>= 1.36.0),
+ libvirt-dev (>= 2.3.0), libglib2.0-dev (>= 2.48.0),
+ libxml2-dev (>= 2.9.1), libgirepository1.0-dev, gobject-introspection (>= 1.36.0),
  meson,
 # for vala bindings
-  valac (>= 0.20)
-Standards-Version: 4.5.1
+ valac (>= 0.20)
+Standards-Version: 4.6.2
 Homepage: https://libvirt.org
 Vcs-Git: https://salsa.debian.org/libvirt-team/libvirt-glib.git
 Vcs-Browser: https://salsa.debian.org/libvirt-team/libvirt-glib
+Rules-Requires-Root: no
 
 Package: libvirt-glib-1.0-0
 Architecture: any
@@ -32,6 +34,8 @@ Package: libvirt-glib-1.0-dev
 Architecture: any
 Multi-Arch: same
 Section: libdevel
+Provides:
+ ${gir:Provides},
 Depends: libvirt-glib-1.0-0 (= ${binary:Version}), ${misc:Depends},
  gir1.2-libvirt-glib-1.0 (= ${binary:Version}), libvirt-dev
 Recommends: pkg-config
@@ -47,7 +51,7 @@ Description: Development files for the libvirt-glib library
 Package: libvirt-glib-1.0-data
 Architecture: all
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Common files for libvirt GLib library
  The libvirt-glib library eases integration of libvirt's events and API into
  GLib and GObject based applications.
@@ -60,13 +64,13 @@ Architecture: any
 Multi-Arch: same
 Section: introspection
 Provides:
+ ${gir:Provides},
  gir1.2-libvirtgconfig-1.0 (= ${binary:Version}),
  gir1.2-libvirtglib-1.0 (= ${binary:Version}),
  gir1.2-libvirtgobject-1.0 (= ${binary:Version}),
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${gir:Depends}
+Depends: ${misc:Depends}, ${gir:Depends}
 Description: GObject introspection files for the libvirt-glib library
  The libvirt-glib library eases integration of libvirt's events and API into
  GLib and GObject based applications.
  .
  This package contains the GObject-introspection data in binary typelib format.
-

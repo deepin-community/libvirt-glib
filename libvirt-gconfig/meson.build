@@ -17,6 +17,7 @@ libvirt_gconfig_public_headers = [
   'libvirt-gconfig-domain-address.h',
   'libvirt-gconfig-domain-address-pci.h',
   'libvirt-gconfig-domain-address-usb.h',
+  'libvirt-gconfig-domain-audio.h',
   'libvirt-gconfig-domain-capabilities.h',
   'libvirt-gconfig-domain-capabilities-os.h',
   'libvirt-gconfig-domain-channel.h',
@@ -43,6 +44,7 @@ libvirt_gconfig_public_headers = [
   'libvirt-gconfig-domain-graphics-sdl.h',
   'libvirt-gconfig-domain-graphics-spice.h',
   'libvirt-gconfig-domain-graphics-vnc.h',
+  'libvirt-gconfig-domain-graphics-dbus.h',
   'libvirt-gconfig-domain-hostdev.h',
   'libvirt-gconfig-domain-hostdev-pci.h',
   'libvirt-gconfig-domain-input.h',
@@ -104,6 +106,7 @@ libvirt_gconfig_sources = [
   'libvirt-gconfig-domain-address.c',
   'libvirt-gconfig-domain-address-pci.c',
   'libvirt-gconfig-domain-address-usb.c',
+  'libvirt-gconfig-domain-audio.c',
   'libvirt-gconfig-domain-capabilities.c',
   'libvirt-gconfig-domain-capabilities-os.c',
   'libvirt-gconfig-domain-channel.c',
@@ -130,6 +133,7 @@ libvirt_gconfig_sources = [
   'libvirt-gconfig-domain-graphics-sdl.c',
   'libvirt-gconfig-domain-graphics-spice.c',
   'libvirt-gconfig-domain-graphics-vnc.c',
+  'libvirt-gconfig-domain-graphics-dbus.c',
   'libvirt-gconfig-domain-hostdev.c',
   'libvirt-gconfig-domain-hostdev-pci.c',
   'libvirt-gconfig-domain-input.c',
@@ -192,6 +196,10 @@ libvirt_gconfig_enum_sources = gnome.mkenums(
   c_template: 'libvirt-gconfig-enum-types.c.template',
   symbol_prefix: 'gvir_config',
   identifier_prefix: 'GVirConfig',
+  # workaround for https://github.com/mesonbuild/meson/issues/9472
+  install_header: false,
+  install_dir: libvirt_gconfig_includedir,
+  # end workaround
 )
 
 libvirt_gconfig_sources += [libvirt_gconfig_enum_sources, libvirt_gconfig_enum_headers]
@@ -200,24 +208,26 @@ libvirt_gconfig_deps = [
   libvirt_dep, gobject_dep, libxml_dep,
 ]
 
+libvirt_gconfig_sym_file = meson.current_source_dir() / 'libvirt-gconfig.sym'
 libvirt_gconfig_link_args = common_link_args
-if host_machine.system() == 'linux'
-  libvirt_gconfig_link_args += [
-    '-Wl,--version-script,@0@/@1@'.format(
-      meson.current_source_dir(),
-      'libvirt-gconfig.sym'
-    )
-  ]
+libvirt_gconfig_link_depends = []
+if version_script_flags != ''
+  libvirt_gconfig_link_args += '@0@@1@'.format(
+    version_script_flags,
+    libvirt_gconfig_sym_file,
+  )
+  libvirt_gconfig_link_depends += libvirt_gconfig_sym_file
 endif
 
 libvirt_gconfig = shared_library(
   'virt-gconfig-1.0',
   sources: libvirt_gconfig_sources,
-  c_args: common_cflags,
+  c_args: common_cflags + warning_cflags,
   dependencies: libvirt_gconfig_deps,
   include_directories: top_include_dir,
   link_with: [libvirt_glib],
   link_args: libvirt_gconfig_link_args,
+  link_depends: libvirt_gconfig_link_depends,
   version: libvirt_glib_version,
   darwin_versions: libvirt_glib_darwin_versions,
   soversion: libvirt_glib_soversion,
@@ -284,13 +294,15 @@ if build_tests
   subdir('tests')
 endif
 
-test('check-gconfig-symfile',
-     python3,
-     args: [check_symfile,
-            join_paths(meson.current_source_dir(), 'libvirt-gconfig.sym'),
-            join_paths(meson.current_build_dir(), 'libvirt-gconfig-1.0.so')])
+if host_machine.system() != 'windows' and host_machine.system() != 'darwin'
+  test('check-gconfig-symfile',
+       python3,
+       args: [check_symfile_prog.full_path(),
+              libvirt_gconfig_sym_file,
+              join_paths(meson.current_build_dir(), 'libvirt-gconfig-1.0.so')])
+endif
 
 test('check-gconfig-symsorting',
      python3,
-     args: [check_symsorting,
-            join_paths(meson.current_source_dir(), 'libvirt-gconfig.sym')])
+     args: [check_symsorting_prog.full_path(),
+            libvirt_gconfig_sym_file])

@@ -1,9 +1,6 @@
 #!/usr/bin/make -f
 
-DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
-
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/default.mk
+export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
 
 %:
 	dh $@
@@ -11,6 +8,7 @@ include /usr/share/dpkg/default.mk
 override_dh_auto_configure:
 	dh_auto_configure -- -Dintrospection=enabled -Dvapi=enabled
 
-override_dh_makeshlibs:
-	dh_makeshlibs -a
-	dh_girepository
+override_dh_auto_test:
+	# disable the syntax-check tests, which are mostly for
+	# upstream development
+	dh_auto_test -- --no-suite syntax-check

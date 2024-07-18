@@ -1,3 +1,52 @@
+libvirt-glib (5.0.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Simplify symbols file using symver
+  * d/control: add ${gir:Provides} to the Provides of libvirt-glib-1.0-dev
+  * Override lintian gir-missing-typelib-dependency for libvirt-glib-1.0-dev
+  * Disable syntax-check tests by passing --no-suite syntax-check to meson test.
+    Drop the patch Disable-syntax-checks.patch, no more needed now.
+
+ -- Pino Toscano <pino@debian.org>  Tue, 05 Dec 2023 08:31:03 +0100
+
+libvirt-glib (5.0.0-1) unstable; urgency=medium
+
+  * d/control: add ${gir:Provides} to the Provides of gir1.2-libvirt-glib-1.0
+  * New upstream version 5.0.0
+  * d/copyright: update for the new version
+  * d/control: bump build dependencies according to the upstream build system
+  * d/patches/Disable-syntax-checks.patch: refresh
+  * Add new symbols
+
+ -- Pino Toscano <pino@debian.org>  Fri, 01 Dec 2023 00:45:45 +0100
+
+libvirt-glib (4.0.0-3) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Guido Günther ]
+  * metadata: Add location of upstream repo
+
+  [ Pino Toscano ]
+  * Update maintainership:
+    - set Maintainer to Debian Libvirt Maintainers, like other libvirt packages
+    - move Guido to Uploaders
+  * Use the dh-sequence-gir build dependency.
+  * d/upstream/metadata: update & add more information
+  * d/watch: bump to v4, and switch to the new upstream download location.
+  * Trim trailing whitespace.
+  * Re-export upstream signing key without extra signatures.
+  * Update standards version to 4.6.2, no changes needed.
+  * d/patches/Disable-syntax-checks.patch: add DEP-3 headers
+  * d/control: drop ${shlibs:Depends} substvar where not needed
+  * d/control: add Rules-Requires-Root: no
+  * d/control: drop the intltool build dependency, no more used
+  * d/rules: stop manually exporting build flags, dh handles them already.
+  * d/copyright: switch to copyright-format v1.0, and update.
+  * d/control: bump build dependencies according to the upstream build system
+
+ -- Pino Toscano <pino@debian.org>  Sat, 16 Sep 2023 10:17:05 +0200
+
 libvirt-glib (4.0.0-2) unstable; urgency=medium
 
   * Upload to unstable (Closes: #993358)
@@ -6,7 +55,7 @@ libvirt-glib (4.0.0-2) unstable; urgency=medium
  -- Guido Günther <agx@sigxcpu.org>  Tue, 31 Aug 2021 13:40:39 +0200
 
 libvirt-glib (4.0.0-1) experimental; urgency=medium
-  
+
   * Upload to experimental
   * d/watch: Look for xz tarballs.
     Upstream switched with 4.0.0
