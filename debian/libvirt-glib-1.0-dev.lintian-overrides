@@ -1,0 +1,2 @@
+# false positive: gir1.2-libvirt-glib-1.0 has the Provides for it
+libvirt-glib-1.0-dev: gir-missing-typelib-dependency
